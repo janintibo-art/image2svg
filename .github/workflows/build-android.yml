@@ -44,6 +44,9 @@ jobs:
         working-directory: android
         run: |
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+          yes | buildozer android debug || true
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
           buildozer -v android debug
 
       - name: Rename APK
