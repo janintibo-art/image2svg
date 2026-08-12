@@ -14,10 +14,11 @@ android.minapi = 24
 android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.allow_backup = True
-p4a.branch = master
+p4a.branch = v2024.01.21
 
 [buildozer]
 log_level = 2
 warn_on_root = 1
 android.build_tools_version = 34.0.0
 android.accept_sdk_license = True
+android.ndk = 25b
