@@ -22,8 +22,10 @@ jobs:
           set -o pipefail
           docker run --rm \
             -v "${{ github.workspace }}/android":/home/user/hostcwd \
+            -w /home/user/hostcwd \
+            --user root \
             --entrypoint /bin/bash \
-            kivy/buildozer -c "buildozer -v android debug" 2>&1 | tee build.log
+            kivy/buildozer -c "ls -la && buildozer -v android debug" 2>&1 | tee build.log
         continue-on-error: true
 
       - name: Extract errors from log
