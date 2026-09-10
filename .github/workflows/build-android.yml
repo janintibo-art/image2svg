@@ -14,48 +14,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Fix ownership for container
+        run: sudo chown -R 1000:1000 android
+
+      - name: Build APK in Kivy container
+        run: |
+          set -o pipefail
+          docker run --rm \
+            -v "${{ github.workspace }}/android":/home/user/hostcwd \
+            --entrypoint /bin/bash \
+            kivy/buildozer -c "buildozer -v android debug" 2>&1 | tee build.log
+        continue-on-error: true
+
+      - name: Extract errors from log
+        if: always()
+        run: |
+          echo "=============== ERREURS ==============="
+          grep -n -i -E "error|failed|traceback|No such file|not found" build.log | tail -n 40 || true
+          echo "=============== 60 DERNIERES LIGNES ==============="
+          tail -n 60 build.log || true
+
+      - name: Upload full log
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.11'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip \
-            autoconf libtool pkg-config zlib1g-dev libncurses-dev \
-            libtinfo6 cmake libffi-dev libssl-dev build-essential ccache \
-            libbz2-dev liblzma-dev libsqlite3-dev libreadline-dev \
-            libncursesw5-dev tk-dev libgdbm-dev uuid-dev zip
-
-      - name: Install Buildozer
-        run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython==0.29.36
-
-      - name: Install Android SDK + accept licenses
-        run: |
-          SDK=$HOME/.buildozer/android/platform/android-sdk
-          mkdir -p $SDK
-          cd $SDK
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip -O cmdline.zip
-          unzip -q cmdline.zip
-          rm cmdline.zip
-          mkdir -p $SDK/licenses
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $SDK/licenses/android-sdk-license
-          echo "8933bad161af4178b1185d1a37fbf41ea5269c55" >> $SDK/licenses/android-sdk-license
-          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $SDK/licenses/android-sdk-license
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" > $SDK/licenses/android-sdk-preview-license
-          yes | $SDK/tools/bin/sdkmanager --sdk_root=$SDK "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
-          ls $SDK/tools/bin/sdkmanager && ls $SDK/build-tools
-
-      - name: Build APK
-        working-directory: android
-        run: |
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-          buildozer -v android debug
+          name: build-log
+          path: build.log
 
       - name: Collect APK
         run: |
+          sudo chown -R $(id -u):$(id -g) android
           mkdir -p out
           cp android/bin/*.apk out/Image2SVG.apk
 
