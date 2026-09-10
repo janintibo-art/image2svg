@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image2SVG — convertir vos images en SVG</title>
+<meta name="description" content="Application gratuite pour convertir PNG, JPG, WEBP et autres formats en SVG, avec visionneuse intégrée. Windows et Android.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#101820;
+  --paper:#FAFAF7;
+  --ultramarine:#1E3888;
+  --aqua:#47A8BD;
+  --lemon:#F5E663;
+  --magenta:#9C3587;
+  --rule:#D9D7CF;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:17px;line-height:1.6;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* ---------- hero ---------- */
+header{padding:56px 0 24px}
+.mark{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+  font-size:19px;letter-spacing:-.02em;
+}
+.mark span{width:14px;height:14px;background:var(--ultramarine);border-radius:2px}
+
+h1{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-weight:800;font-size:clamp(40px,8vw,76px);
+  line-height:.98;letter-spacing:-.035em;
+  margin:32px 0 0;max-width:14ch;
+}
+.lede{max-width:52ch;margin:22px 0 0;font-size:19px;color:#3B4450}
+
+/* ---------- démo pixel → vecteur ---------- */
+.demo{margin:40px 0 8px;border:1px solid var(--rule);background:#fff;border-radius:4px;overflow:hidden}
+.demo svg{display:block;width:100%;height:auto}
+.demo figcaption{
+  padding:12px 16px;border-top:1px solid var(--rule);
+  font-size:14px;color:#5A6472;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+@keyframes reveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+#vector-layer{animation:reveal 1.6s cubic-bezier(.65,0,.35,1) .45s both}
+@media (prefers-reduced-motion:reduce){#vector-layer{animation:none}}
+
+/* ---------- téléchargements ---------- */
+.downloads{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin:56px 0 0}
+.plat{border:2px solid var(--ink);border-radius:4px;padding:26px;background:#fff;display:flex;flex-direction:column}
+.plat h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:0;letter-spacing:-.02em}
+.plat p{margin:10px 0 0;font-size:15px;color:#3B4450}
+.meta{margin-top:auto;padding-top:20px;font-size:14px;color:#5A6472;font-variant-numeric:tabular-nums}
+.btn{
+  display:block;margin-top:18px;padding:15px 20px;border-radius:3px;
+  background:var(--ultramarine);color:#fff;text-decoration:none;
+  font-weight:600;font-size:16px;text-align:center;
+  transition:background .15s ease;
+}
+.btn:hover,.btn:focus-visible{background:#16296A}
+.btn[aria-disabled="true"]{background:#B9BCC4;pointer-events:none}
+.btn.alt{background:var(--magenta)}
+.btn.alt:hover,.btn.alt:focus-visible{background:#7B2A6B}
+a:focus-visible,.btn:focus-visible{outline:3px solid var(--lemon);outline-offset:2px}
+
+/* ---------- fonctionnalités ---------- */
+.features{margin:72px 0 0;display:grid;gap:36px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.features h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:500;font-size:20px;margin:0 0 8px;letter-spacing:-.01em}
+.features p{margin:0;font-size:16px;color:#3B4450;max-width:34ch}
+.swatch{width:36px;height:8px;border-radius:2px;margin-bottom:14px}
+
+/* ---------- note sécurité ---------- */
+.note{
+  margin:64px 0 0;padding:22px 24px;border-left:5px solid var(--lemon);
+  background:#fff;border-radius:0 4px 4px 0;
+}
+.note h3{margin:0 0 8px;font-size:17px;font-family:'Bricolage Grotesque',sans-serif;font-weight:500}
+.note p{margin:0;font-size:15px;color:#3B4450;max-width:62ch}
+
+footer{margin:80px 0 48px;padding-top:24px;border-top:1px solid var(--rule);font-size:14px;color:#5A6472}
+footer a{color:var(--ultramarine)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="mark"><span></span>Image2SVG</div>
+  <h1>Vos images deviennent des formes.</h1>
+  <p class="lede">Convertissez PNG, JPG, WEBP, BMP, GIF, TIFF et ICO en SVG redimensionnable à l'infini. Une visionneuse est intégrée pour vérifier le résultat tout de suite.</p>
+</header>
+
+<figure class="demo">
+  <svg viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Un dégradé de pixels se transforme en aplats de couleur vectoriels.">
+    <defs>
+      <linearGradient id="blur" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#1E3888"/>
+        <stop offset="45%" stop-color="#47A8BD"/>
+        <stop offset="75%" stop-color="#F5E663"/>
+        <stop offset="100%" stop-color="#9C3587"/>
+      </linearGradient>
+    </defs>
+    <rect width="800" height="260" fill="url(#blur)"/>
+    <g id="vector-layer" shape-rendering="crispEdges">
+      <rect x="0" y="0" width="180" height="130" fill="#1E3888"/>
+      <rect x="180" y="0" width="150" height="80" fill="#24479B"/>
+      <rect x="330" y="0" width="170" height="130" fill="#3E7FA8"/>
+      <rect x="500" y="0" width="140" height="60" fill="#47A8BD"/>
+      <rect x="640" y="0" width="160" height="130" fill="#7FC4CE"/>
+      <rect x="180" y="80" width="150" height="50" fill="#2E63A2"/>
+      <rect x="500" y="60" width="140" height="70" fill="#8ACBC9"/>
+      <rect x="0" y="130" width="220" height="130" fill="#2E63A2"/>
+      <rect x="220" y="130" width="180" height="70" fill="#47A8BD"/>
+      <rect x="220" y="200" width="180" height="60" fill="#9C3587"/>
+      <rect x="400" y="130" width="200" height="130" fill="#F5E663"/>
+      <rect x="600" y="130" width="200" height="75" fill="#D8C24E"/>
+      <rect x="600" y="205" width="200" height="55" fill="#9C3587"/>
+    </g>
+  </svg>
+  <figcaption>
+    <span>À gauche : les pixels d'origine.</span>
+    <span>À droite : les chemins vectoriels générés.</span>
+  </figcaption>
+</figure>
+
+<section class="downloads">
+  <article class="plat">
+    <h2>Windows</h2>
+    <p>Fichier .exe autonome. Aucune installation de Python nécessaire.</p>
+    <div class="meta" id="win-meta">Recherche de la dernière version…</div>
+    <a class="btn" id="win-btn" href="#" aria-disabled="true">Chargement…</a>
+  </article>
+
+  <article class="plat">
+    <h2>Android</h2>
+    <p>Fichier .apk. Autorisez l'installation depuis une source inconnue lors de la première ouverture.</p>
+    <div class="meta" id="apk-meta">Recherche de la dernière version…</div>
+    <a class="btn alt" id="apk-btn" href="#" aria-disabled="true">Chargement…</a>
+  </article>
+</section>
+
+<section class="features">
+  <div>
+    <div class="swatch" style="background:var(--ultramarine)"></div>
+    <h3>Deux façons de convertir</h3>
+    <p>La vectorisation redessine l'image en aplats de couleur, idéale pour les logos. L'encapsulation conserve la photo à l'identique dans le fichier SVG.</p>
+  </div>
+  <div>
+    <div class="swatch" style="background:var(--aqua)"></div>
+    <h3>Visionneuse intégrée</h3>
+    <p>Ouvrez n'importe quel SVG et zoomez sans perte de netteté, à la molette sur Windows, à deux doigts sur Android.</p>
+  </div>
+  <div>
+    <div class="swatch" style="background:var(--magenta)"></div>
+    <h3>Rien ne quitte votre appareil</h3>
+    <p>Tout le traitement se fait en local. Aucune image n'est envoyée sur un serveur, aucun compte n'est demandé.</p>
+  </div>
+</section>
+
+<aside class="note">
+  <h3>Si Windows bloque le fichier</h3>
+  <p>L'application n'est pas signée par un certificat payant, alors SmartScreen peut afficher un avertissement. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ». Le code source complet est consultable sur le dépôt.</p>
+</aside>
+
+<footer>
+  Code source, historique des versions et signalement de bugs sur
+  <a href="https://github.com/janintibo-art/image2svg">github.com/janintibo-art/image2svg</a>.
+</footer>
+
+</div>
+
+<script>
+const REPO = 'janintibo-art/image2svg';
+
+function humanSize(bytes){
+  return bytes > 1048576
+    ? (bytes/1048576).toFixed(0) + ' Mo'
+    : Math.max(1, Math.round(bytes/1024)) + ' Ko';
+}
+
+function humanDate(iso){
+  return new Date(iso).toLocaleDateString('fr-FR',
+    {day:'numeric', month:'long', year:'numeric'});
+}
+
+function fill(kind, asset, release){
+  const btn  = document.getElementById(kind + '-btn');
+  const meta = document.getElementById(kind + '-meta');
+  if(asset){
+    btn.href = asset.browser_download_url;
+    btn.removeAttribute('aria-disabled');
+    btn.textContent = 'Télécharger ' + (kind === 'win' ? 'pour Windows' : "l'APK");
+    meta.textContent = humanSize(asset.size) + ' · publié le ' + humanDate(release.published_at);
+  } else {
+    btn.textContent = 'Compilation en cours';
+    meta.textContent = "Aucun fichier publié pour l'instant. Le build automatique le déposera ici dès qu'il aura réussi.";
+  }
+}
+
+fetch('https://api.github.com/repos/' + REPO + '/releases')
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(releases => {
+    let win = null, apk = null, winRel = null, apkRel = null;
+    for(const rel of releases){
+      for(const a of rel.assets){
+        const n = a.name.toLowerCase();
+        if(!win && n.endsWith('.exe')){ win = a; winRel = rel; }
+        if(!apk && n.endsWith('.apk')){ apk = a; apkRel = rel; }
+      }
+    }
+    fill('win', win, winRel);
+    fill('apk', apk, apkRel);
+  })
+  .catch(() => {
+    for(const k of ['win','apk']){
+      document.getElementById(k + '-meta').textContent =
+        'Impossible de contacter GitHub pour le moment.';
+      const b = document.getElementById(k + '-btn');
+      b.href = 'https://github.com/' + REPO + '/releases';
+      b.removeAttribute('aria-disabled');
+      b.textContent = 'Voir toutes les versions';
+    }
+  });
+</script>
+</body>
+</html>
